@@ -48,10 +48,13 @@ if __name__ == "__main__":
                 if result:
                     fragmented_videos.extend(result)
 
-        streamLib.package_the_video_files_to_dash(fragmented_videos, OUTPUT_DIR)
-        
         end_time = time.time()
+        
+
+        streamLib.package_the_video_files_to_dash(fragmented_videos, OUTPUT_DIR)
         print(f"Total time taken: {round(end_time - start_time, 2)} seconds",flush=True)
+        
+       
         
     else:
         print("Invalid Input Video File", flush=True)

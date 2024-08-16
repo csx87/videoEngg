@@ -34,6 +34,7 @@ def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
 
 def package_the_video_files_to_dash(videoFiles: list, output_dir: str,):
     try:
+        print("Trying to package the files into DASH stramble format")
         input_video_files = []
         for videoFile in videoFiles:
             if(videoFile is None or videoFile.aspect_ratio <= 0):
@@ -51,12 +52,13 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str,):
             command = command + input_video_files
             
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            print(f"Packaging successful! Output file: " + output_dir)
         else:
             pass
             #TODO give proper output str
 
     except subprocess.CalledProcessError as e:
-            print(f"An error occurred: {e.stderr.decode('utf-8')}")
+            print(f"An error occurred: {e.stderr.decode('utf-8')}",flush=True)
     
 
 if __name__ == "__main__":
