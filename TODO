@@ -1,2 +1,5 @@
 make sure ouput and tmp dir are there
 Have a check for mp4 path
+rm the output dir at sart
+
+Imp: the video class attributes should be constant
