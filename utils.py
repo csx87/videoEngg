@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
-
-
 from enum import Enum
+from fractions import Fraction
 
 class Color():
     def __init__(self,color):
@@ -30,3 +29,17 @@ def create_a_circle(radius: int,color: str) -> str:
 
 if __name__ == "__main__":
     create_a_circle(200,"kuchbhi")
+
+
+def is_valid_video(video,isHDR, open_frame = False):
+    if(video.width > 0 and video.height > 0 and video.aspect_ratio == Fraction(video.width,video.height) and video.isHDR == isHDR):
+        cap = cv2.VideoCapture(video.path)
+        if not cap.isOpened():
+            return False
+        if(open_frame):
+            ret, frame = cap.read() 
+            cap.release()
+            return ret
+        return True
+    else:
+        return False
