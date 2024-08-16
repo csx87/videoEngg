@@ -31,8 +31,8 @@ if __name__ == "__main__":
     create_a_circle(200,"kuchbhi")
 
 
-def is_valid_video(video,isHDR, open_frame = False):
-    if(video.width > 0 and video.height > 0 and video.aspect_ratio == Fraction(video.width,video.height) and video.isHDR == isHDR):
+def is_valid_video(video, open_frame = False):
+    if(video.width > 0 and video.height > 0 and video.aspect_ratio == Fraction(video.width,video.height)):
         cap = cv2.VideoCapture(video.path)
         if not cap.isOpened():
             return False

@@ -8,7 +8,7 @@ import packaging_stuff as streamLib
 def video_stuff_test(onlySDR: bool):
     video_sdr = videoLib.VideoFile('./input.mp4')
     print("loading the SDR video.... ",end="")
-    if(is_valid_video(video_sdr,isHDR = False)):
+    if(is_valid_video(video_sdr)):
         print("Passed")
     else:
         print("Failed")
@@ -17,7 +17,7 @@ def video_stuff_test(onlySDR: bool):
     if(not onlySDR):
         video_hdr = videoLib.VideoFile('./input_hdr.mkv')
         print("loading the HDR video.... ",end="")
-        if(is_valid_video(video_hdr,isHDR = True)):
+        if(is_valid_video(video_hdr)):
             print("Passed")
         else:
             print("Failed")
@@ -26,7 +26,7 @@ def video_stuff_test(onlySDR: bool):
 
     video_720_sdr = videoLib.transcode_to_h265_and_insert_a_circle(video_sdr,720)
     print("Transcoding of SDR video...",end="")
-    if(is_valid_video(video_720_sdr,open_frame = True,isHDR = False)):
+    if(is_valid_video(video_720_sdr,open_frame = True)):
         print("Passed")
     else:
         print("Failed")
@@ -34,7 +34,7 @@ def video_stuff_test(onlySDR: bool):
     if(not onlySDR):
         video_720_hdr,video_720_sdr = videoLib.transcode_to_h265_and_insert_a_circle(video_hdr,720)
         print("Transcoding of HDR video...",end="")
-        if(is_valid_video(video_720_hdr,open_frame = True,isHDR = True) and is_valid_video(video_720_sdr,open_frame = True,isHDR = False)):
+        if(is_valid_video(video_720_hdr,open_frame = True) and is_valid_video(video_720_sdr,open_frame = True)):
             print("Passed")
         else:
             print("Failed")
