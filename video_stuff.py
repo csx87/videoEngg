@@ -3,7 +3,7 @@ import os
 from fractions import Fraction
 import time
 import math
-from config import CONSTANT_RATE_FACTOR as CRF, PRESET, SEGMENT_DURATION, HDR2SDR_filter 
+from config import CONSTANT_RATE_FACTOR as CRF, PRESET, SEGMENT_DURATION, HDR2SDR_FILTER 
 from utils import create_a_circle, is_valid_video 
 
 
