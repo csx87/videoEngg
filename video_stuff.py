@@ -42,7 +42,6 @@ class VideoFile:
                 if "color_space" in stream_data and "color_transfer" in stream_data and "color_primaries" in stream_data:
                     if stream_data["color_primaries"] == 'bt2020' and stream_data["color_transfer"] in ['smpte2084', 'arib-std-b67'] and stream_data["color_space"] == 'bt2020nc':
                         isHDR = True
-                        print("Video is a HDR video") 
         except ffmpeg.Error as e:
             error_message = e.stderr.decode()
             if "Invalid argument" in error_message:
