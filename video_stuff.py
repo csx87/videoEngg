@@ -3,6 +3,7 @@ from fractions import Fraction
 from utils import create_a_circle
 import time
 import math
+from config import CONSTANT_RATE_FACTOR as CRF, PRESET, SEGMENT_DURATION 
 
 TEMP_DIR="./tmp"
 
@@ -59,7 +60,7 @@ class VideoFile:
 
 
 
-def transcode_to_h265_and_insert_a_circle(videoFile : VideoFile,output_height: int):
+def transcode_to_h265_and_insert_a_circle(videoFile : VideoFile,output_height: int, crf_op = CRF, preset_op = PRESET, segement_duration_op = SEGMENT_DURATION):
     if(len(videoFile.path) > 0 and videoFile.aspect_ratio != 0 and output_height > 0):
         try:
             output_width = math.ceil((videoFile.aspect_ratio.numerator)*output_height/(videoFile.aspect_ratio.denominator))
@@ -92,14 +93,18 @@ def transcode_to_h265_and_insert_a_circle(videoFile : VideoFile,output_height: i
             inv = ffmpeg.input(videoFile.path)
             ini = ffmpeg.input(circle_path)
             output_path = f"{TEMP_DIR}/output_{output_height}.mp4"
-            segment_size = 180
+            #TODO get frames from videoFile
+            segment_size = int((segement_duration_op/1000)*24)
+            print("Segment size:",segment_size)
 
             ffmpeg.output(inv,ini,
                 output_path, 
                 filter_complex=f"[0:v]scale={output_width}:{output_height}[scaled];[scaled][1:v]overlay={x_position}:{y_position}",
-                vcodec='libx265', preset='medium', 
-                crf=28,
-                force_key_frames=f"expr:eq(mod(n,{segment_size}),0)").run(overwrite_output= True,capture_stdout=False, capture_stderr=True)
+                vcodec='libx265', 
+                preset=preset_op, 
+                crf= crf_op,
+                force_key_frames=f"expr:eq(mod(n,{segment_size}),0)"
+            ).run(overwrite_output= True,capture_stdout=False, capture_stderr=True)
             
             if(videoFile.isHDR):
                 #Creating an SDR file
@@ -119,9 +124,10 @@ def transcode_to_h265_and_insert_a_circle(videoFile : VideoFile,output_height: i
                         f"[scaled][1:v]overlay=W-w:H-h"
                     ),
                     vcodec='libx265',
-                    preset='medium',
-                    crf=28,
-                    force_key_frames=f"expr:eq(mod(n,{segment_size}),0)").run(overwrite_output=True, capture_stdout=False, capture_stderr=True)
+                    preset=preset_op,
+                    crf=crf_op,
+                    force_key_frames=f"expr:eq(mod(n,{segment_size}),0)"
+                ).run(overwrite_output=True, capture_stdout=False, capture_stderr=True)
 
 
             end_time = time.time()
