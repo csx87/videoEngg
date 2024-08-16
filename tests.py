@@ -24,7 +24,7 @@ def video_stuff_test(onlySDR: bool):
             exit()
 
 
-    video_720_sdr = videoLib.transcode_to_h265_and_insert_a_circle(video_sdr,720)
+    video_720_sdr = videoLib.transcode_to_h265_with_circle_overlay(video_sdr,720)
     print("Transcoding of SDR video...",end="")
     if(is_valid_video(video_720_sdr,open_frame = True)):
         print("Passed")
@@ -32,7 +32,7 @@ def video_stuff_test(onlySDR: bool):
         print("Failed")
 
     if(not onlySDR):
-        video_720_hdr,video_720_sdr = videoLib.transcode_to_h265_and_insert_a_circle(video_hdr,720)
+        video_720_hdr,video_720_sdr = videoLib.transcode_to_h265_with_circle_overlay(video_hdr,720)
         print("Transcoding of HDR video...",end="")
         if(is_valid_video(video_720_hdr,open_frame = True) and is_valid_video(video_720_sdr,open_frame = True)):
             print("Passed")

@@ -12,11 +12,11 @@ def process_resolution(resolution):
     try:
         fragmented_videos = []
         if inputVideo.isHDR:
-            transcoded_video, transcoded_video_sdr = videoLib.transcode_to_h265_and_insert_a_circle(inputVideo, resolution)
+            transcoded_video, transcoded_video_sdr = videoLib.transcode_to_h265_with_circle_overlay(inputVideo, resolution)
             fragmented_videos.append(streamLib.fragment_the_video_file(transcoded_video, SEGMENT_DURATION))
             fragmented_videos.append(streamLib.fragment_the_video_file(transcoded_video_sdr, SEGMENT_DURATION))
         else:
-            transcoded_video = videoLib.transcode_to_h265_and_insert_a_circle(inputVideo, resolution)
+            transcoded_video = videoLib.transcode_to_h265_with_circle_overlay(inputVideo, resolution)
             fragmented_videos.append(streamLib.fragment_the_video_file(transcoded_video, SEGMENT_DURATION))
         return fragmented_videos
     except Exception as e:

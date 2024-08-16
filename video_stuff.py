@@ -92,7 +92,7 @@ class VideoFile:
 
 
 
-def transcode_to_h265_and_insert_a_circle(videoFile: VideoFile, output_height: int):
+def transcode_to_h265_with_circle_overlay(videoFile: VideoFile, output_height: int):
     if output_height <= 0:
         print("Invalid Resolution")
         return None
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     #video = VideoFile('./tmp/output_720.mp4')
     print(f"Width: {video.width}, Height: {video.height}, Aspect Ratio: {video.aspect_ratio}, frame_rate:{round(video.frame_rate,2)} ,HDR video:{'yes' if video.isHDR else 'no'}")
 
-    video_720 = transcode_to_h265_and_insert_a_circle(video,360)
+    video_720 = transcode_to_h265_with_circle_overlay(video,360)
 
 
     end_time = time.time()
