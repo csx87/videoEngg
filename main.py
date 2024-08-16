@@ -2,6 +2,7 @@ import video_stuff as videoLib
 import packaging_stuff as streamLib
 import time
 import os
+import sys
 import concurrent.futures
 
 RESOLUTION_TO_TRANSCODE = [360, 480, 720, 1080]
@@ -53,7 +54,7 @@ if __name__ == "__main__":
         streamLib.package_the_video_files_to_dash(fragmented_videos, OUTPUT_DIR)
         
         end_time = time.time()
-        print(f"Total time taken: {round(end_time - start_time, 2)} seconds")
-        exit()
+        print(f"Total time taken: {round(end_time - start_time, 2)} seconds",flush=True)
+        
     else:
-        print("Invalid Input Video File")
+        print("Invalid Input Video File", flush=True)
