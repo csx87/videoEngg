@@ -117,10 +117,8 @@ def transcode_to_h265_and_insert_a_circle(videoFile : VideoFile,output_height: i
                     ini,
                     sdr_output_path,
                     filter_complex=(
-                        # Apply scaling and HDR-to-SDR conversion, and label the result as [scaled]
-                        f"[0:v]scale={output_width}:{output_height}",
-                        HDR2SDR_filter,
-                        # Use the labeled output [scaled] and overlay it with the second video [1:v]
+                        f"[0:v]scale={output_width}:{output_height}," + 
+                        HDR2SDR_filter +
                         f"[scaled][1:v]overlay=W-w:H-h"
                     ),
                     vcodec='libx265',
