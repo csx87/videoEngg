@@ -37,7 +37,7 @@ def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
         except subprocess.CalledProcessError as e:
             print(f"An error occurred: {e.stderr.decode('utf-8')}")
 
-def package_the_video_files_to_dash(videoFiles: list, output_dir: str,):
+def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
     try:
         print("Trying to package the files into DASH stramble format")
         input_video_files = []
@@ -46,7 +46,11 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str,):
                 print(f"{videoFile.path} is invalid, not including in stream")
             else: 
                 input_video_files.append(videoFile.path)
-        if(len(output_dir) > 0 and len(input_video_files) > 0):
+        
+        if(len(input_video_files)  == 0):
+            print("Error: Give proper input files")
+
+        else:
             mp4dash = os.path.join(BENTO4_SDK_PATH,"bin","mp4dash")
             command =[mp4dash,
                 "--profile",
@@ -59,9 +63,6 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str,):
             
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             print(f"Packaging successful! Output file: " + output_dir)
-        else:
-            pass
-            #TODO give proper output str
 
     except subprocess.CalledProcessError as e:
             print(f"An error occurred: {e.stderr.decode('utf-8')}",flush=True)
