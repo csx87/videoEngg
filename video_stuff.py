@@ -1,11 +1,18 @@
 import ffmpeg
+import os
 from fractions import Fraction
-from utils import create_a_circle, is_valid_video
 import time
 import math
-from config import CONSTANT_RATE_FACTOR as CRF, PRESET, SEGMENT_DURATION, HDR2SDR_filter  
+from config import CONSTANT_RATE_FACTOR as CRF, PRESET, SEGMENT_DURATION, HDR2SDR_filter 
+from utils import create_a_circle, is_valid_video 
 
-TEMP_DIR="./tmp"
+
+TEMP_DIR="tmp"
+
+HDR_CIRCLE_COLOR = "blue"
+SDR_CIRCLE_COLOR = "white"
+HDR_PERCENT = 0.07
+SDR_PERCENT = 0.05
 
 class VideoFile:
     def __init__(self, name):
@@ -59,7 +66,6 @@ class VideoFile:
 
             if "streams" in probe.keys():
                 stream_data = probe["streams"][0]
-                print(stream_data) 
                 if "width" in stream_data and "height" in stream_data and "r_frame_rate" in stream_data:
                     width = stream_data["width"]
                     height = stream_data["height"]
@@ -86,90 +92,77 @@ class VideoFile:
 
 
 
-def transcode_to_h265_and_insert_a_circle(videoFile : VideoFile,output_height: int):
-    
-    if(output_height <=0):
+def transcode_to_h265_and_insert_a_circle(videoFile: VideoFile, output_height: int):
+    if output_height <= 0:
         print("Invalid Resolution")
         return None
 
-    if(not is_valid_video(videoFile)):
+    if not is_valid_video(videoFile):
         print("Invalid Video File")
         return None
-    else:
-        try:
-            output_width = math.ceil((videoFile.aspect_ratio.numerator)*output_height/(videoFile.aspect_ratio.denominator))
 
-            print(f"Transcoding video to {output_width}x{output_height}")
-            
-            if(videoFile.isHDR):
-                circle_color = "blue"
-                y_position = "0"
-                perc = 0.07
-            
-            else:
-                circle_color = "white"
-                y_position = "H-h"
-                perc = 0.05
+    try:
+        output_width = math.ceil((videoFile.aspect_ratio.numerator * output_height) / videoFile.aspect_ratio.denominator)
+        print(f"Transcoding video to {output_width}x{output_height}")
 
-            x_position = "W-w"
-            circle_path = create_a_circle(int(perc*output_height),circle_color)
-            start_time = time.time()
-        
+        circle_color = HDR_CIRCLE_COLOR if videoFile.isHDR else SDR_CIRCLE_COLOR
+        y_position = "0" if videoFile.isHDR else "H-h"
+        perc = HDR_PERCENT if videoFile.isHDR else SDR_PERCENT
+        x_position = "W-w"
 
-            inv = ffmpeg.input(videoFile.path)
-            ini = ffmpeg.input(circle_path)
-            output_path = f"{TEMP_DIR}/output_{output_height}.mp4"
-            segment_size = int((SEGMENT_DURATION/1000)*videoFile.frame_rate)
+        circle_path = create_a_circle(int(perc * output_height), circle_color)
+        start_time = time.time()
 
-            ffmpeg.output(inv,ini,
-                output_path, 
-                filter_complex=f"[0:v]scale={output_width}:{output_height}[scaled];[scaled][1:v]overlay={x_position}:{y_position}",
-                vcodec='libx265', 
-                preset=PRESET, 
-                crf= CRF,
+        # Common output path
+        output_path = os.path.join(TEMP_DIR,f"output_{output_height}.mp4")
+        segment_size = int((SEGMENT_DURATION / 1000) * videoFile.frame_rate)
+
+        # Base ffmpeg input
+        inv = ffmpeg.input(videoFile.path)
+        ini = ffmpeg.input(circle_path)
+
+        # Create main output
+        ffmpeg.output(
+            inv, ini,
+            str(output_path),
+            filter_complex=f"[0:v]scale={output_width}:{output_height}[scaled];[scaled][1:v]overlay={x_position}:{y_position}",
+            vcodec='libx265',
+            preset=PRESET,
+            crf=CRF,
+            force_key_frames=f"expr:eq(mod(n,{segment_size}),0)"
+        ).run(overwrite_output=True, capture_stdout=False, capture_stderr=True)
+
+        # HDR to SDR conversion
+        if videoFile.isHDR:
+            sdr_circle_path = create_a_circle(int(SDR_PERCENT * output_height), SDR_CIRCLE_COLOR)
+            sdr_output_path = os.path.join(f"output_{output_height}_sdr.mp4")
+
+            ffmpeg.output(
+                inv, ffmpeg.input(sdr_circle_path),
+                str(sdr_output_path),
+                filter_complex=f"[0:v]scale={output_width}:{output_height},{HDR2SDR_FILTER}[scaled][1:v]overlay=W-w:H-h",
+                vcodec='libx265',
+                preset=PRESET,
+                crf=CRF,
                 force_key_frames=f"expr:eq(mod(n,{segment_size}),0)"
-            ).run(overwrite_output= True,capture_stdout=False, capture_stderr=True)
-            
-            if(videoFile.isHDR):
-                #Creating an SDR file
-                sdr_circle_path = create_a_circle(int(0.05*output_height),"white")
-                ini = ffmpeg.input(sdr_circle_path)
-                sdr_output_path = f"{TEMP_DIR}/output_{output_height}_sdr.mp4"
-            
-                ffmpeg.output(
-                    inv,
-                    ini,
-                    sdr_output_path,
-                    filter_complex=(
-                        f"[0:v]scale={output_width}:{output_height}," + 
-                        HDR2SDR_filter +
-                        f"[scaled][1:v]overlay=W-w:H-h"
-                    ),
-                    vcodec='libx265',
-                    preset=PRESET,
-                    crf=CRF,
-                    force_key_frames=f"expr:eq(mod(n,{segment_size}),0)"
-                ).run(overwrite_output=True, capture_stdout=False, capture_stderr=True)
+            ).run(overwrite_output=True, capture_stdout=False, capture_stderr=True)
 
+            return VideoFile(str(output_path)), VideoFile(str(sdr_output_path))
 
-            end_time = time.time()
+        return VideoFile(str(output_path))
 
-            print(f"Successfully Transcoded video to {output_width}x{output_height} in {round(end_time - start_time,2)} sec")
-            if(videoFile.isHDR):
-                return VideoFile(output_path), VideoFile(sdr_output_path)
-
-            return VideoFile(output_path)
-            
-        except ffmpeg.Error as e:
-            if "Invalid argument" in e.stderr.decode():
-                print("Invalid argument error")
-            elif "File not found" in e.stderr.decode():
-                print("File not found error")
-            else:
-                print("General FFmpeg error")
-            print("Error output:", e.stderr.decode())
-            print("Error message:", e.stdout.decode())
-            return None
+    except ffmpeg.Error as e:
+        stderr = e.stderr.decode()
+        stdout = e.stdout.decode()
+        if "Invalid argument" in stderr:
+            print("Invalid argument error")
+        elif "File not found" in stderr:
+            print("File not found error")
+        else:
+            print("General FFmpeg error")
+        print("Error output:", stderr)
+        print("Error message:", stdout)
+        return None
     
 
 
