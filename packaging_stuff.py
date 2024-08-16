@@ -1,26 +1,34 @@
 import subprocess
 from video_stuff import VideoFile
+from utils import is_valid_video
+import os
+from config import BENTO4_SDK_PATH
 
 SEGMENT_DURATION = 7500 #ms
-TEMP_DIR = "./tmp"
-BENTO_OUTPUT_DIR = "./bento_output"
-BENTO4_SDK_PATH = "/home/csx87/lib/Bento4-SDK-1-6-0-641.x86_64-unknown-linux/bin"
+TEMP_DIR = "tmp"
+BENTO_OUTPUT_DIR = "bento_output"
+
     
 def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
-    if(videoFile is not None and videoFile.aspect_ratio > 0 and segement_duration > 0):
+    if(segement_duration <= 0):
+        print("Invalid Segment Duration")
+        return None 
+    if(not is_valid_video(videoFile)):
+        print("Not a valid video file")
+        return None
+    else:
         try:
-            output_file_path = f"{TEMP_DIR}/output_{videoFile.height}_frag.mp4"
-            if(videoFile.isHDR):
-                output_file_path = f"{TEMP_DIR}/output_{videoFile.height}_HDR_frag.mp4"
+            output_file_name = f"output_{videoFile.height}_HDR_frag.mp4" if videoFile.isHDR else f"output_{videoFile.height}_frag.mp4"
+            output_file_path = os.path.join(TEMP_DIR,output_file_name)
+            print(output_file_path)
+            mp4fragment = os.path.join(BENTO4_SDK_PATH,"bin","mp4fragment")
             command = [
-                f'{BENTO4_SDK_PATH}/mp4fragment', 
+                mp4fragment, 
                 f'--fragment-duration',
                 str(segement_duration),
                 videoFile.path,
                 output_file_path
             ]
-
-            # Run the command
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
             print(f"Fragmentation successful! Output file: " + output_file_path)
@@ -28,9 +36,6 @@ def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
         
         except subprocess.CalledProcessError as e:
             print(f"An error occurred: {e.stderr.decode('utf-8')}")
-    else:
-        pass 
-        #TODO exception or Invalid parameters
 
 def package_the_video_files_to_dash(videoFiles: list, output_dir: str,):
     try:
@@ -42,7 +47,8 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str,):
             else: 
                 input_video_files.append(videoFile.path)
         if(len(output_dir) > 0 and len(input_video_files) > 0):
-            command =[f"{BENTO4_SDK_PATH}/mp4dash",
+            mp4dash = os.path.join(BENTO4_SDK_PATH,"bin","mp4dash")
+            command =[mp4dash,
                 "--profile",
                 "on-demand",
                 "--output-dir",
@@ -69,4 +75,4 @@ if __name__ == "__main__":
     video_720_frag_sdr = fragment_the_video_file(video_720_sdr,7500)
 
     package_the_video_files_to_dash([video_720_frag,video_720_frag_sdr],"./bento_output")
-    #package_the_video_files_to_dash([video_720_frag_sdr],"./bento_output")
+    package_the_video_files_to_dash([video_720_frag_sdr],"./bento_output")

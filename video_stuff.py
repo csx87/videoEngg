@@ -113,7 +113,6 @@ def transcode_to_h265_with_circle_overlay(videoFile: VideoFile, output_height: i
         circle_path = create_a_circle(int(perc * output_height), circle_color)
         start_time = time.time()
 
-        # Common output path
         output_path = os.path.join(TEMP_DIR,f"output_{output_height}.mp4")
         segment_size = int((SEGMENT_DURATION / 1000) * videoFile.frame_rate)
 

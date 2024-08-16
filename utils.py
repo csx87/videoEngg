@@ -3,6 +3,7 @@ import numpy as np
 from enum import Enum
 from fractions import Fraction
 
+
 class Color():
     def __init__(self,color):
         if(color == "white"):
