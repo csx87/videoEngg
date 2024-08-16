@@ -2,7 +2,6 @@ import video_stuff as videoLib
 import packaging_stuff as streamLib
 import time
 import os
-import sys
 import concurrent.futures
 
 RESOLUTION_TO_TRANSCODE = [360, 480, 720, 1080]
@@ -49,8 +48,6 @@ if __name__ == "__main__":
                 if result:
                     fragmented_videos.extend(result)
 
-        # Ensure directory exists
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
         streamLib.package_the_video_files_to_dash(fragmented_videos, OUTPUT_DIR)
         
         end_time = time.time()
