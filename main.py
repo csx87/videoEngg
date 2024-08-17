@@ -57,7 +57,7 @@ if __name__ == "__main__":
         fragmented_videos = []
         start_time = time.time()
 
-        #Each resolution is transcoded in a seperatr thread
+        #Each resolution is transcoded in a seperate thread
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = {executor.submit(process_resolution, res): res for res in RESOLUTION_TO_TRANSCODE}
 

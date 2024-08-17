@@ -96,7 +96,7 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
             command = command + input_video_files
             
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            print(f"\n\n\n Packaging successful! Output file: " + output_dir)
+            print(f"\n\n\n Packaging successful! Find the stream.mpd in: ./{output_dir} \n\n\n" )
 
     except subprocess.CalledProcessError as e:
             print(f"An error occurred: {e.stderr.decode('utf-8')}",flush=True)
