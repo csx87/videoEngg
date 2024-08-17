@@ -8,8 +8,6 @@ from config import OUTPUT_DIR,SEGMENT_DURATION
 
 RESOLUTION_TO_TRANSCODE = [360, 480, 720, 1080]
 
-
-
 def process_resolution(resolution):
     try:
         fragmented_videos = []
