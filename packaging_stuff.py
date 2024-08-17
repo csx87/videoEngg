@@ -47,6 +47,10 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
 
         else:
             mp4dash = os.path.join(BENTO4_SDK_PATH,"bin","mp4dash")
+
+            if os.name == 'nt': #windows
+                mp4dash = mp4dash + ".bat"
+
             command =[mp4dash,
                 "--profile",
                 "on-demand",
@@ -58,11 +62,9 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
             command = command + input_video_files
             
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            os.system('stty sane')
-            print(f"Packaging successful! Output file: " + output_dir)
+            print(f"/n/n/n Packaging successful! Output file: " + output_dir)
 
     except subprocess.CalledProcessError as e:
-            os.system('stty sane')
             print(f"An error occurred: {e.stderr.decode('utf-8')}",flush=True)
     
 

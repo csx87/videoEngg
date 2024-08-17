@@ -39,5 +39,6 @@ def is_valid_video(video, open_frame = False):
 
 def clean_and_exit():
     shutil.rmtree(TEMP_DIR)
-    os.system('stty sane')
+    if os.name != "nt": 
+        os.system('stty sane')
     exit()
