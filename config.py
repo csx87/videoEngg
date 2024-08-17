@@ -1,6 +1,7 @@
 import sys
 import os
 
+TEMP_DIR = "tmp"
 
 CONSTANT_RATE_FACTOR = 28
 PRESET = "medium"

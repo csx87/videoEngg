@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from enum import Enum
 from fractions import Fraction
+import os
+from config import TEMP_DIR
 
 class Color():
     def __init__(self,color):
@@ -17,8 +19,9 @@ def create_a_circle(radius: int,color: str) -> str:
     image = np.zeros((height, width, 4), dtype="uint8")
     center = (int(height/2), int(width/2))
     cv2.circle(image, center, radius,Color(color).bgra, -1)  # (B, G, R, A) format
-    cv2.imwrite(f'./tmp/output_circle_{radius}.png', image)
-    return f'./tmp/output_circle_{radius}.png'
+    output_path = os.path.join(TEMP_DIR,f'output_circle_{radius}.png')
+    cv2.imwrite(output_path, image)
+    return output_path
 
 def is_valid_video(video, open_frame = False):
     if(video.width > 0 and video.height > 0 and video.aspect_ratio == Fraction(video.width,video.height)):

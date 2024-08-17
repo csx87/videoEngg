@@ -134,7 +134,7 @@ def transcode_to_h265_with_circle_overlay(videoFile: VideoFile, output_height: i
         # HDR to SDR conversion
         if videoFile.isHDR:
             sdr_circle_path = create_a_circle(int(SDR_PERCENT * output_height), SDR_CIRCLE_COLOR)
-            sdr_output_path = os.path.join(f"output_{output_height}_sdr.mp4")
+            sdr_output_path = os.path.join(TEMP_DIR,f"output_{output_height}_sdr.mp4")
 
             ffmpeg.output(
                 inv, ffmpeg.input(sdr_circle_path),
