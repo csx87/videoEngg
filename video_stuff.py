@@ -6,12 +6,35 @@ import math
 from config import CONSTANT_RATE_FACTOR as CRF, PRESET, SEGMENT_DURATION, HDR2SDR_FILTER, TEMP_DIR
 from utils import create_a_circle, is_valid_video 
 
-HDR_CIRCLE_COLOR = "blue"
+HDR_CIRCLE_COLOR = "green"
 SDR_CIRCLE_COLOR = "white"
 HDR_PERCENT = 0.07
 SDR_PERCENT = 0.05
 
 class VideoFile:
+    """
+    Represents a video file with its metadata, including resolution, frame rate, aspect ratio, and HDR status.
+
+    This class encapsulates the attributes of a video file and provides properties to access its metadata. It attempts to initialize these attributes by extracting metadata from the video file during object creation.
+
+    Attributes:
+        path (str): The file path of the video.
+        width (int): The width of the video in pixels.
+        height (int): The height of the video in pixels.
+        frame_rate (float): The frame rate of the video.
+        aspect_ratio (Fraction): The aspect ratio of the video as a Fraction object.
+        isHDR (bool): Indicates whether the video is in HDR format.
+
+    Methods:
+        __initialize(): wrapper to __get_metadata_from_video
+        __get_metadata_from_video(): Private method to retrieve metadata from the video file and initialize the class attributes.
+
+    Args:
+        name (str): The file path of the video.
+
+    Raises:
+        Exception: If there is an error retrieving metadata from the video file, an error message is printed.
+    """
     def __init__(self, name):
         self._path = name
         self._width = 0
@@ -90,6 +113,18 @@ class VideoFile:
 
 
 def transcode_to_h265_with_circle_overlay(videoFile: VideoFile, output_height: int):
+    """
+    Transcodes the video to h265 and inserts a circle. If video is HDR it creates a SDR version also
+
+    Args:
+        videoFile(VideoFile): The video to transcode
+        output_height(int): The intended height of the ouput video (width is calculated using aspect_ratio of videoFile) 
+
+    Returns:
+        transcoded_video: if videoFile was SDR
+        transcoded_video,transcoded_video_sdr: if videoFile was HDR
+        None: if some error occured
+    """
     if output_height <= 0:
         print("Invalid Resolution")
         return None

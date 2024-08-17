@@ -1,14 +1,26 @@
-import video_stuff as videoLib
-import packaging_stuff as streamLib
 import time
 import os
 import concurrent.futures
+import video_stuff as videoLib
+import packaging_stuff as streamLib
+
+import argparse
+
 from utils import is_valid_video,clean_and_exit
 from config import OUTPUT_DIR,SEGMENT_DURATION
 
 RESOLUTION_TO_TRANSCODE = [360, 480, 720, 1080]
 
-def process_resolution(resolution):
+def process_resolution(resolution): 
+    """
+    Transcodes and fragments a video based on its resolution and HDR status.
+
+    Args:
+        resolution (str): The resolution(height) to which the input video should be transcoded
+
+    Returns:
+        list: A list of fragmented video files.
+    """
     try:
         fragmented_videos = []
         if inputVideo.isHDR:
@@ -24,7 +36,12 @@ def process_resolution(resolution):
         return []
 
 if __name__ == "__main__":
-    input_path = input("Enter the video file path: ")
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('input_file', type=str, help='The input file to be processed')
+
+    args = parser.parse_args()
+
+    input_path = args.input_file
 
     if not os.path.exists(input_path):
         print(f"File not found: {input_path}")
@@ -40,6 +57,7 @@ if __name__ == "__main__":
         fragmented_videos = []
         start_time = time.time()
 
+        #Each resolution is transcoded in a seperatr thread
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = {executor.submit(process_resolution, res): res for res in RESOLUTION_TO_TRANSCODE}
 

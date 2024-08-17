@@ -6,6 +6,21 @@ import sys
 from config import BENTO4_SDK_PATH,SEGMENT_DURATION, TEMP_DIR
     
 def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
+    """
+    Fragments a video file into segments of specified duration.
+
+    Args:
+        videoFile (VideoFile): The video file to be fragmented. 
+        segment_duration (int): The duration of each segment in seconds. Must be a positive integer.
+
+    Returns:
+        VideoFile: An instance of the `VideoFile` class representing the path to the fragmented output file
+        None: if the fragmentation fails or the input is invalid.
+
+    Raises:
+        ValueError: If `segment_duration` is less than or equal to zero.
+        FileNotFoundError: If `videoFile` is not a valid video file."""
+
     if(segement_duration <= 0):
         print("Invalid Segment Duration")
         return None 
@@ -33,6 +48,25 @@ def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
             print(f"An error occurred: {e.stderr.decode('utf-8')}")
 
 def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
+    """
+    Packages a list of video files into DASH (Dynamic Adaptive Streaming over HTTP) format.
+
+    This function uses the `mp4dash` tool to package multiple video files into a DASH-compliant streaming format.
+
+    Args:
+        videoFiles (list): A list of `VideoFile` instances to be packaged into DASH format. Each `VideoFile` should have properties like `path` and `aspect_ratio`.
+        output_dir (str): The directory where the packaged DASH files will be saved.
+
+    Returns:
+        None: The function does not return a value but prints status messages indicating success or failure.
+
+    Raises:
+        ValueError: If no valid video files are provided.
+        subprocess.CalledProcessError: If the `mp4dash` command fails, an error message is printed detailing the issue.
+    
+    Notes:
+        The final output will be in OUTPUT_DIR specified in config.py (./output by default)
+    """
     try:
         print("Trying to package the files into DASH stramble format",flush = True)
         input_video_files = []
@@ -62,7 +96,7 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
             command = command + input_video_files
             
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            print(f"/n/n/n Packaging successful! Output file: " + output_dir)
+            print(f"\n\n\n Packaging successful! Output file: " + output_dir)
 
     except subprocess.CalledProcessError as e:
             print(f"An error occurred: {e.stderr.decode('utf-8')}",flush=True)

@@ -10,8 +10,8 @@ class Color():
     def __init__(self,color):
         if(color == "white"):
             self.bgra = (255,255,255,255) #The 4th parameter is the alpha channel, basically indating transparency is 0%
-        elif(color == "blue"):
-            self.bgra = (255,0,0,255)
+        elif(color == "green"):
+            self.bgra = (0,255,0,255)
         else:
             self.bgra = (0,0,0,255)
         
