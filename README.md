@@ -27,7 +27,7 @@ Run the following command to start processing your input files:
 python3 main.py <path_to_input_files>
 ```
 
-- The `stream.mpd` file will be generated in the output directory.
+- The `stream.mpd` file will be generated in the ```./output``` directory.
 
 ### Troubleshooting
 
