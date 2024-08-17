@@ -172,11 +172,11 @@ def transcode_to_h265_with_circle_overlay(videoFile: VideoFile, output_height: i
 if __name__ == "__main__":
 
     start_time = time.time()
-    video = VideoFile('./input.mp4')
+    video = VideoFile('./input_hdr.mkv')
     #video = VideoFile('./tmp/output_720.mp4')
     print(f"Width: {video.width}, Height: {video.height}, Aspect Ratio: {video.aspect_ratio}, frame_rate:{round(video.frame_rate,2)} ,HDR video:{'yes' if video.isHDR else 'no'}")
 
-    video_720 = transcode_to_h265_with_circle_overlay(video,360)
+    video_720,video_720_sdr = transcode_to_h265_with_circle_overlay(video,360)
 
 
     end_time = time.time()
