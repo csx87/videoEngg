@@ -3,12 +3,7 @@ from video_stuff import VideoFile
 from utils import is_valid_video
 import os
 import sys
-from config import BENTO4_SDK_PATH
-
-SEGMENT_DURATION = 7500 #ms
-TEMP_DIR = "tmp"
-BENTO_OUTPUT_DIR = "bento_output"
-
+from config import BENTO4_SDK_PATH,SEGMENT_DURATION, TEMP_DIR
     
 def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
     if(segement_duration <= 0):

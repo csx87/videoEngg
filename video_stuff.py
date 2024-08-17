@@ -3,11 +3,8 @@ import os
 from fractions import Fraction
 import time
 import math
-from config import CONSTANT_RATE_FACTOR as CRF, PRESET, SEGMENT_DURATION, HDR2SDR_FILTER 
+from config import CONSTANT_RATE_FACTOR as CRF, PRESET, SEGMENT_DURATION, HDR2SDR_FILTER, TEMP_DIR
 from utils import create_a_circle, is_valid_video 
-
-
-TEMP_DIR="tmp"
 
 HDR_CIRCLE_COLOR = "blue"
 SDR_CIRCLE_COLOR = "white"
