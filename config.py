@@ -1,11 +1,12 @@
 import sys
 import os
+import shutil
 
 TEMP_DIR = "tmp"
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 OUTPUT_DIR = "output"
-os.makedirs(TEMP_DIR, exist_ok=True)
+shutil.rmtree(OUTPUT_DIR)
 
 SEGMENT_DURATION = 7500  # ms
 CONSTANT_RATE_FACTOR = 28
