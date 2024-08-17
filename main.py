@@ -3,6 +3,7 @@ import packaging_stuff as streamLib
 import time
 import os
 import concurrent.futures
+from utils import is_valid_video
 
 RESOLUTION_TO_TRANSCODE = [360, 480, 720, 1080]
 SEGMENT_DURATION = 7500  # ms
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
     inputVideo = videoLib.VideoFile(input_path)
     
-    if inputVideo.aspect_ratio > 0:
+    if is_valid_video(inputVideo,True):
         print(f"{input_path} is of resolution {inputVideo.width}x{inputVideo.height} "
               f"and aspect ratio {inputVideo.aspect_ratio} "
               f"HDR video: {'yes' if inputVideo.isHDR else 'no'}")
@@ -50,9 +51,10 @@ if __name__ == "__main__":
 
         end_time = time.time()
         
-
+        
         streamLib.package_the_video_files_to_dash(fragmented_videos, OUTPUT_DIR)
         print(f"Total time taken: {round(end_time - start_time, 2)} seconds",flush=True)
+        
         
        
         

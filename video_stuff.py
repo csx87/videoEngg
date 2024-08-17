@@ -104,6 +104,8 @@ def transcode_to_h265_with_circle_overlay(videoFile: VideoFile, output_height: i
     try:
         output_width = math.ceil((videoFile.aspect_ratio.numerator * output_height) / videoFile.aspect_ratio.denominator)
         print(f"Transcoding video to {output_width}x{output_height}")
+        
+        start_time = time.time()
 
         circle_color = HDR_CIRCLE_COLOR if videoFile.isHDR else SDR_CIRCLE_COLOR
         y_position = "0" if videoFile.isHDR else "H-h"
@@ -145,9 +147,13 @@ def transcode_to_h265_with_circle_overlay(videoFile: VideoFile, output_height: i
                 crf=CRF,
                 force_key_frames=f"expr:eq(mod(n,{segment_size}),0)"
             ).run(overwrite_output=True, capture_stdout=False, capture_stderr=True)
-
+            
+            end_time = time.time()
+            print(f"Transcoded video to {output_width}x{output_height} completed in {round(end_time-start_time,2)}")
             return VideoFile(str(output_path)), VideoFile(str(sdr_output_path))
-
+            
+        end_time = time.time()
+        print(f"Transcoding video to {output_width}x{output_height} completed in {round(end_time-start_time,2)}")
         return VideoFile(str(output_path))
 
     except ffmpeg.Error as e:

@@ -2,6 +2,7 @@ import subprocess
 from video_stuff import VideoFile
 from utils import is_valid_video
 import os
+import sys
 from config import BENTO4_SDK_PATH
 
 SEGMENT_DURATION = 7500 #ms
@@ -20,7 +21,6 @@ def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
         try:
             output_file_name = f"output_{videoFile.height}_HDR_frag.mp4" if videoFile.isHDR else f"output_{videoFile.height}_frag.mp4"
             output_file_path = os.path.join(TEMP_DIR,output_file_name)
-            print(output_file_path)
             mp4fragment = os.path.join(BENTO4_SDK_PATH,"bin","mp4fragment")
             command = [
                 mp4fragment, 
@@ -31,7 +31,7 @@ def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
             ]
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
-            print(f"Fragmentation successful! Output file: " + output_file_path)
+            print(f"Fragmentation of {videoFile.width}x{videoFile.height} {'HDR' if videoFile.isHDR else ''} successful!")
             return VideoFile(output_file_path)
         
         except subprocess.CalledProcessError as e:
@@ -39,7 +39,7 @@ def fragment_the_video_file(videoFile: VideoFile, segement_duration: int):
 
 def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
     try:
-        print("Trying to package the files into DASH stramble format")
+        print("Trying to package the files into DASH stramble format",flush = True)
         input_video_files = []
         for videoFile in videoFiles:
             if(videoFile is None or videoFile.aspect_ratio <= 0):
@@ -62,9 +62,11 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
             command = command + input_video_files
             
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            os.system('stty sane')
             print(f"Packaging successful! Output file: " + output_dir)
 
     except subprocess.CalledProcessError as e:
+            os.system('stty sane')
             print(f"An error occurred: {e.stderr.decode('utf-8')}",flush=True)
     
 
