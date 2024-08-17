@@ -3,11 +3,12 @@ import packaging_stuff as streamLib
 import time
 import os
 import concurrent.futures
-from utils import is_valid_video
+from utils import is_valid_video,clean_and_exit
+from config import OUTPUT_DIR,SEGMENT_DURATION
 
 RESOLUTION_TO_TRANSCODE = [360, 480, 720, 1080]
-SEGMENT_DURATION = 7500  # ms
-OUTPUT_DIR = "./output"
+
+
 
 def process_resolution(resolution):
     try:
@@ -51,12 +52,15 @@ if __name__ == "__main__":
 
         end_time = time.time()
         
-        
-        streamLib.package_the_video_files_to_dash(fragmented_videos, OUTPUT_DIR)
-        print(f"Total time taken: {round(end_time - start_time, 2)} seconds",flush=True)
-        
-        
-       
+        try: 
+            streamLib.package_the_video_files_to_dash(fragmented_videos, OUTPUT_DIR)
+            print(f"Total time taken: {round(end_time - start_time, 2)} seconds",flush=True)
+            clean_and_exit()
+
+        except Exception as e:
+            print(f"Failed to pack {e}")
+            clean_and_exit()
         
     else:
         print("Invalid Input Video File", flush=True)
+        clean_and_exit()

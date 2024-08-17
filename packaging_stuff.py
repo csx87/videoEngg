@@ -57,6 +57,7 @@ def package_the_video_files_to_dash(videoFiles: list, output_dir: str):
                 "on-demand",
                 "--output-dir",
                 output_dir,
+                "--force"
             ]
 
             command = command + input_video_files

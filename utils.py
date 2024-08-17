@@ -3,6 +3,7 @@ import numpy as np
 from enum import Enum
 from fractions import Fraction
 import os
+import shutil
 from config import TEMP_DIR
 
 class Color():
@@ -35,3 +36,8 @@ def is_valid_video(video, open_frame = False):
         return True
     else:
         return False
+
+def clean_and_exit():
+    shutil.rmtree(TEMP_DIR)
+    os.system('stty sane')
+    exit()
